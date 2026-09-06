@@ -12,7 +12,7 @@ const products = [
     discount: 17,
     rating: 4.9,
     stock: 25,
-    image: '🏴‍☠️',
+    image: '/images/onepiece.jpg',
     description:
       'Hành trình của Luffy và băng Mũ Rơm tiếp tục với những cuộc phiêu lưu đầy hấp dẫn.',
   },
@@ -26,7 +26,7 @@ const products = [
     discount: 21,
     rating: 4.8,
     stock: 18,
-    image: '🍥',
+    image: '/images/naruto.jpg',
     description:
       'Tập cuối của hành trình Naruto, nơi những trận chiến quan trọng đi đến hồi kết.',
   },
@@ -40,7 +40,7 @@ const products = [
     discount: 14,
     rating: 4.9,
     stock: 30,
-    image: '⚔️',
+    image: '/images/demon-slayer.jpg',
     description:
       'Tanjiro và những người đồng đội bước vào trận chiến quyết định cuối cùng.',
   },
@@ -54,7 +54,7 @@ const products = [
     discount: 10,
     rating: 4.9,
     stock: 15,
-    image: '🖤',
+    image: '/images/solo-leveling.jpg',
     description:
       'Sung Jin-Woo tiếp tục hành trình trở thành thợ săn mạnh nhất.',
   },
@@ -68,7 +68,7 @@ const products = [
     discount: 17,
     rating: 4.8,
     stock: 20,
-    image: '🧱',
+    image: '/images/attack-on-titan.jpg',
     description:
       'Cuộc chiến giữa nhân loại và Titan bước vào giai đoạn quyết định.',
   },
@@ -82,7 +82,7 @@ const products = [
     discount: 15,
     rating: 4.8,
     stock: 22,
-    image: '👹',
+    image: '/images/jujutsu-kaisen.jpg',
     description:
       'Yuji và những chú thuật sư đối mặt với những nguy hiểm ngày càng lớn.',
   },
@@ -309,7 +309,13 @@ function App() {
           className="product-image"
           onClick={() => openProduct(product)}
         >
-          <span>{product.image}</span>
+          <img
+            src={product.image}
+            alt={`Bìa ${product.name}`}
+            onError={(event) => {
+              event.currentTarget.style.display = 'none'
+            }}
+          />
 
           <span className="discount">
             -{product.discount}%
@@ -464,14 +470,13 @@ function App() {
             </span>
 
             <h1>
-              Tìm câu chuyện
+              Từ trang giấy 
               <br />
-              dành cho riêng bạn
+              những thế giới thành hình
             </h1>
 
             <p>
-              Khám phá hàng nghìn bộ truyện tranh hấp dẫn
-              và tìm kiếm những câu chuyện bạn yêu thích.
+              Có một thế giới đang chờ bạn, chỉ cách một lần lật trang.
             </p>
 
             <button
@@ -600,7 +605,13 @@ function App() {
 
         <div className="detail-content">
           <div className="detail-image">
-            <span>{selectedProduct.image}</span>
+            <img
+              src={selectedProduct.image}
+              alt={`Bìa ${selectedProduct.name}`}
+              onError={(event) => {
+                event.currentTarget.style.display = 'none'
+              }}
+            />
           </div>
 
           <div className="detail-info">
@@ -740,7 +751,13 @@ function App() {
                   key={item.id}
                 >
                   <div className="cart-item-image">
-                    {item.image}
+                    <img
+                      src={item.image}
+                      alt={`Bìa ${item.name}`}
+                      onError={(event) => {
+                        event.currentTarget.style.display = 'none'
+                      }}
+                    />
                   </div>
 
                   <div className="cart-item-info">
@@ -980,9 +997,17 @@ function App() {
                       className="order-product"
                       key={item.id}
                     >
-                      <span>
-                        {item.image} {item.name} ×{' '}
-                        {item.quantity}
+                      <span className="order-product-name">
+                        <img
+                          src={item.image}
+                          alt={`Bìa ${item.name}`}
+                          onError={(event) => {
+                            event.currentTarget.style.display = 'none'
+                          }}
+                        />
+                        <span>
+                          {item.name} × {item.quantity}
+                        </span>
                       </span>
 
                       <span>
