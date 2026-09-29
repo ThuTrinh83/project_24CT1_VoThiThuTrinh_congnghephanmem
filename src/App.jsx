@@ -1,116 +1,99 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
-const products = [
-  {
-    id: 1,
-    name: 'One Piece - Tập 108',
-    author: 'Eiichiro Oda',
-    category: 'Shounen',
-    price: 25000,
-    oldPrice: 30000,
-    discount: 17,
-    rating: 4.9,
-    stock: 25,
-    image: '/images/onepiece.jpg',
-    description:
-      'Hành trình của Luffy và băng Mũ Rơm tiếp tục với những cuộc phiêu lưu đầy hấp dẫn.',
-  },
-  {
-    id: 2,
-    name: 'Naruto - Tập 72',
-    author: 'Masashi Kishimoto',
-    category: 'Shounen',
-    price: 22000,
-    oldPrice: 28000,
-    discount: 21,
-    rating: 4.8,
-    stock: 18,
-    image: '/images/naruto.jpg',
-    description:
-      'Tập cuối của hành trình Naruto, nơi những trận chiến quan trọng đi đến hồi kết.',
-  },
-  {
-    id: 3,
-    name: 'Demon Slayer - Tập 23',
-    author: 'Koyoharu Gotouge',
-    category: 'Action',
-    price: 30000,
-    oldPrice: 35000,
-    discount: 14,
-    rating: 4.9,
-    stock: 30,
-    image: '/images/demon-slayer.jpg',
-    description:
-      'Tanjiro và những người đồng đội bước vào trận chiến quyết định cuối cùng.',
-  },
-  {
-    id: 4,
-    name: 'Solo Leveling - Tập 8',
-    author: 'Chu-Gong',
-    category: 'Fantasy',
-    price: 45000,
-    oldPrice: 50000,
-    discount: 10,
-    rating: 4.9,
-    stock: 15,
-    image: '/images/solo-leveling.jpg',
-    description:
-      'Sung Jin-Woo tiếp tục hành trình trở thành thợ săn mạnh nhất.',
-  },
-  {
-    id: 5,
-    name: 'Attack on Titan - Tập 34',
-    author: 'Hajime Isayama',
-    category: 'Action',
-    price: 35000,
-    oldPrice: 42000,
-    discount: 17,
-    rating: 4.8,
-    stock: 20,
-    image: '/images/attack-on-titan.jpg',
-    description:
-      'Cuộc chiến giữa nhân loại và Titan bước vào giai đoạn quyết định.',
-  },
-  {
-    id: 6,
-    name: 'Jujutsu Kaisen - Tập 25',
-    author: 'Gege Akutami',
-    category: 'Shounen',
-    price: 28000,
-    oldPrice: 33000,
-    discount: 15,
-    rating: 4.8,
-    stock: 22,
-    image: '/images/jujutsu-kaisen.jpg',
-    description:
-      'Yuji và những chú thuật sư đối mặt với những nguy hiểm ngày càng lớn.',
-  },
-]
-
-const categories = ['Tất cả', 'Shounen', 'Action', 'Fantasy']
-
+// Định dạng giá tiền sang tiền Việt
 function formatPrice(price) {
+  if (price === undefined || price === null) return '0đ';
   return price.toLocaleString('vi-VN') + 'đ'
 }
 
+// Component chính của ứng dụng ComicHub
 function App() {
+  // Dữ liệu từ Backend
+  const [products, setProducts] = useState([])
+  const [categories, setCategories] = useState(['Tất cả'])
+
+  useEffect(() => {
+    // Lấy danh mục
+    fetch('http://localhost:5000/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setCategories(['Tất cả', ...data.categories.map(c => c.name)])
+        }
+      })
+      .catch(err => console.error('Lỗi lấy danh mục:', err))
+
+    // Lấy sản phẩm
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setProducts(data.products)
+        }
+      })
+      .catch(err => console.error('Lỗi lấy sản phẩm:', err))
+  }, [])
+
+  useEffect(() => {
+    if (currentUser) {
+      fetch(`http://localhost:5000/api/cart/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setCart(data.cart)
+          }
+        })
+        .catch(console.error)
+        
+      fetch(`http://localhost:5000/api/orders/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setOrders(data.orders)
+          }
+        })
+        .catch(console.error)
+    } else {
+      setCart([])
+      setOrders([])
+    }
+  }, [currentUser])
+
+  // Trạng thái chuyển trang và sản phẩm đang được chọn
   const [currentPage, setCurrentPage] = useState('home')
   const [selectedProduct, setSelectedProduct] = useState(null)
+  // Trạng thái tìm kiếm và lọc sản phẩm
   const [selectedCategory, setSelectedCategory] = useState('Tất cả')
   const [searchText, setSearchText] = useState('')
 
+  // Trạng thái giỏ hàng và số lượng sản phẩm
   const [cart, setCart] = useState([])
   const [quantity, setQuantity] = useState(1)
 
+  // Trạng thái đơn hàng
   const [orders, setOrders] = useState([])
 
+  // Trạng thái đăng nhập và tài khoản người dùng
   const [showLogin, setShowLogin] = useState(false)
   const [showRegister, setShowRegister] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [currentUser, setCurrentUser] = useState(null)
 
+  // Dữ liệu nhập trong form đăng nhập
+  const [loginEmail, setLoginEmail] = useState('')
+  const [loginPassword, setLoginPassword] = useState('')
+  // Dữ liệu nhập trong form đăng ký
+  const [registerName, setRegisterName] = useState('')
+  const [registerEmail, setRegisterEmail] = useState('')
+  const [registerPassword, setRegisterPassword] = useState('')
+  // Trạng thái đang xử lý đăng nhập hoặc đăng ký
+  const [authLoading, setAuthLoading] = useState(false)
+
+  // Thông báo nhỏ hiển thị trên giao diện
   const [message, setMessage] = useState('')
 
+  // Trạng thái tin nhắn tư vấn với Shop
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -121,6 +104,7 @@ function App() {
 
   const [chatText, setChatText] = useState('')
 
+  // Hiển thị thông báo nhanh trên giao diện
   function showToast(text) {
     setMessage(text)
 
@@ -129,6 +113,98 @@ function App() {
     }, 2500)
   }
 
+  // Xử lý đăng nhập tài khoản
+  async function handleLogin(event) {
+    event.preventDefault()
+
+    if (!loginEmail || !loginPassword) {
+      showToast('Vui lòng nhập email và mật khẩu!')
+      return
+    }
+
+    try {
+      setAuthLoading(true)
+
+      // Gửi thông tin đăng nhập lên Backend
+      const response = await fetch('http://localhost:5000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: loginEmail,
+          password: loginPassword,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        showToast(data.message || 'Email hoặc mật khẩu không đúng!')
+        return
+      }
+
+      setCurrentUser(data.user)
+      setIsLoggedIn(true)
+      setShowLogin(false)
+      setLoginEmail('')
+      setLoginPassword('')
+      showToast(`Đăng nhập thành công! Xin chào ${data.user.name}!`)
+    } catch (error) {
+      console.error('Login error:', error)
+      showToast('Không kết nối được đến Backend!')
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  // Xử lý đăng ký tài khoản mới
+  async function handleRegister(event) {
+    event.preventDefault()
+
+    if (!registerName || !registerEmail || !registerPassword) {
+      showToast('Vui lòng nhập đầy đủ thông tin!')
+      return
+    }
+
+    try {
+      setAuthLoading(true)
+
+      // Gửi thông tin đăng ký lên Backend để lưu vào SQL Server
+      const response = await fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        showToast(data.message || 'Đăng ký thất bại!')
+        return
+      }
+
+      setRegisterName('')
+      setRegisterEmail('')
+      setRegisterPassword('')
+      setShowRegister(false)
+      setShowLogin(true)
+      showToast('Đăng ký thành công! Hãy đăng nhập.')
+    } catch (error) {
+      console.error('Register error:', error)
+      showToast('Không kết nối được đến Backend!')
+    } finally {
+      setAuthLoading(false)
+    }
+  }
+
+  // Chuyển đổi giữa các trang trong website
   function goToPage(page) {
     setCurrentPage(page)
 
@@ -138,6 +214,7 @@ function App() {
     })
   }
 
+  // Mở trang chi tiết của sản phẩm
   function openProduct(product) {
     setSelectedProduct(product)
     setQuantity(1)
@@ -149,7 +226,16 @@ function App() {
     })
   }
 
+  // Thêm sản phẩm vào giỏ hàng
   function addToCart(product, amount = 1) {
+    if (currentUser) {
+      fetch(`http://localhost:5000/api/cart/${currentUser.id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId: product.id, amount })
+      }).catch(console.error);
+    }
+
     setCart((currentCart) => {
       const existingItem = currentCart.find(
         (item) => item.id === product.id,
@@ -181,7 +267,17 @@ function App() {
     showToast('Đã thêm truyện vào giỏ hàng!')
   }
 
+  // Tăng số lượng sản phẩm trong giỏ hàng
   function increaseCartItem(id) {
+    const item = cart.find(i => i.id === id);
+    if (item && currentUser) {
+      fetch(`http://localhost:5000/api/cart/${currentUser.id}/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: Math.min(item.quantity + 1, item.stock) })
+      }).catch(console.error);
+    }
+
     setCart((currentCart) =>
       currentCart.map((item) =>
         item.id === id
@@ -197,7 +293,21 @@ function App() {
     )
   }
 
+  // Giảm số lượng sản phẩm trong giỏ hàng
   function decreaseCartItem(id) {
+    const item = cart.find(i => i.id === id);
+    if (item && currentUser) {
+      if (item.quantity - 1 <= 0) {
+        fetch(`http://localhost:5000/api/cart/${currentUser.id}/${id}`, { method: 'DELETE' }).catch(console.error);
+      } else {
+        fetch(`http://localhost:5000/api/cart/${currentUser.id}/${id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ quantity: item.quantity - 1 })
+        }).catch(console.error);
+      }
+    }
+
     setCart((currentCart) =>
       currentCart
         .map((item) =>
@@ -212,7 +322,12 @@ function App() {
     )
   }
 
+  // Xóa sản phẩm khỏi giỏ hàng
   function removeFromCart(id) {
+    if (currentUser) {
+      fetch(`http://localhost:5000/api/cart/${currentUser.id}/${id}`, { method: 'DELETE' }).catch(console.error);
+    }
+
     setCart((currentCart) =>
       currentCart.filter((item) => item.id !== id),
     )
@@ -220,7 +335,8 @@ function App() {
     showToast('Đã xóa sản phẩm khỏi giỏ hàng!')
   }
 
-  function createOrder(event) {
+  // Tạo đơn hàng từ giỏ hàng
+  async function createOrder(event) {
     event.preventDefault()
 
     if (cart.length === 0) {
@@ -228,26 +344,58 @@ function App() {
       return
     }
 
-    const newOrder = {
-      id: `CH${Date.now().toString().slice(-6)}`,
-      date: new Date().toLocaleDateString('vi-VN'),
-      items: cart,
-      total: cartTotal,
-      status: 'Chờ xác nhận',
+    if (!currentUser) {
+      showToast('Vui lòng đăng nhập để đặt hàng!')
+      setShowLogin(true)
+      return
     }
 
-    setOrders((currentOrders) => [
-      newOrder,
-      ...currentOrders,
-    ])
+    const formData = new FormData(event.target);
+    const customerName = formData.get('customerName');
+    const phone = formData.get('phone');
+    const address = formData.get('address');
+    const note = formData.get('note');
 
-    setCart([])
-
-    showToast('Đặt hàng thành công!')
-
-    goToPage('orders')
+    try {
+      const response = await fetch('http://localhost:5000/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser.id,
+          customerName,
+          phone,
+          address,
+          note,
+          items: cart,
+          total: cartTotal
+        })
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        showToast('Đặt hàng thành công!');
+        setCart([]);
+        
+        // Cập nhật lại danh sách đơn hàng
+        fetch(`http://localhost:5000/api/orders/${currentUser.id}`)
+          .then(res => res.json())
+          .then(ordersData => {
+            if (ordersData.success) {
+              setOrders(ordersData.orders);
+            }
+          });
+          
+        goToPage('orders');
+      } else {
+        showToast('Lỗi đặt hàng!');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Lỗi kết nối Backend!');
+    }
   }
 
+  // Gửi tin nhắn tư vấn cho Shop
   function sendMessage() {
     const text = chatText.trim()
 
@@ -255,6 +403,7 @@ function App() {
       return
     }
 
+    // Thêm tin nhắn của khách hàng vào khung chat
     setChatMessages((messages) => [
       ...messages,
       {
@@ -266,6 +415,7 @@ function App() {
 
     setChatText('')
 
+    // Tạo phản hồi mẫu từ Shop sau một khoảng thời gian
     setTimeout(() => {
       setChatMessages((messages) => [
         ...messages,
@@ -279,17 +429,20 @@ function App() {
     }, 700)
   }
 
+  // Tính tổng số lượng sản phẩm trong giỏ hàng
   const cartCount = cart.reduce(
     (total, item) => total + item.quantity,
     0,
   )
 
+  // Tính tổng tiền các sản phẩm trong giỏ hàng
   const cartTotal = cart.reduce(
     (total, item) =>
       total + item.price * item.quantity,
     0,
   )
 
+  // Lọc sản phẩm theo từ khóa tìm kiếm và thể loại
   const filteredProducts = products.filter((product) => {
     const matchesSearch = product.name
       .toLowerCase()
@@ -302,6 +455,7 @@ function App() {
     return matchesSearch && matchesCategory
   })
 
+  // Component hiển thị một sản phẩm truyện tranh
   function ProductCard({ product }) {
     return (
       <div className="product-card">
@@ -363,6 +517,7 @@ function App() {
     )
   }
 
+  // Thanh đầu trang và menu điều hướng
   function Header() {
     return (
       <header className="header">
@@ -460,6 +615,7 @@ function App() {
     )
   }
 
+  // Trang chủ ComicHub
   function HomePage() {
     return (
       <>
@@ -529,6 +685,7 @@ function App() {
     )
   }
 
+  // Trang cửa hàng và danh sách sản phẩm
   function ShopPage() {
     return (
       <section className="section page-section">
@@ -588,6 +745,7 @@ function App() {
     )
   }
 
+  // Trang chi tiết sản phẩm
   function DetailPage() {
     if (!selectedProduct) {
       return null
@@ -712,6 +870,7 @@ function App() {
     )
   }
 
+  // Trang giỏ hàng
   function CartPage() {
     return (
       <section className="section page-section">
@@ -856,6 +1015,7 @@ function App() {
     )
   }
 
+  // Trang nhập thông tin đặt hàng
   function CheckoutPage() {
     return (
       <section className="section page-section">
@@ -877,6 +1037,7 @@ function App() {
 
               <input
                 type="text"
+                name="customerName"
                 placeholder="Nguyễn Văn A"
                 required
               />
@@ -887,6 +1048,7 @@ function App() {
 
               <input
                 type="tel"
+                name="phone"
                 placeholder="09xxxxxxxx"
                 required
               />
@@ -897,6 +1059,7 @@ function App() {
 
               <input
                 type="text"
+                name="address"
                 placeholder="Nhập địa chỉ..."
                 required
               />
@@ -906,6 +1069,7 @@ function App() {
               Ghi chú
 
               <textarea
+                name="note"
                 placeholder="Ghi chú cho shop..."
                 rows="4"
               />
@@ -952,6 +1116,7 @@ function App() {
     )
   }
 
+  // Trang lịch sử và trạng thái đơn hàng
   function OrdersPage() {
     return (
       <section className="section page-section">
@@ -1036,6 +1201,7 @@ function App() {
     )
   }
 
+  // Trang danh sách thể loại truyện
   function CategoryPage() {
     return (
       <section className="section page-section">
@@ -1080,6 +1246,7 @@ function App() {
     )
   }
 
+  // Trang truyện đang được khuyến mãi
   function SalePage() {
     return (
       <section className="section page-section">
@@ -1103,7 +1270,8 @@ function App() {
     )
   }
 
-  function ChatPage() {
+  // Trang tư vấn và chat với Shop
+  function renderChatPage() {
     return (
       <section className="section page-section">
         <div className="page-title">
@@ -1177,6 +1345,7 @@ function App() {
     )
   }
 
+  // Trang thông tin tài khoản người dùng
   function AccountPage() {
     return (
       <section className="section page-section">
@@ -1185,9 +1354,9 @@ function App() {
             👤
           </div>
 
-          <h1>Nguyễn Minh</h1>
+          <h1>{currentUser?.name || 'Tài khoản'}</h1>
 
-          <p>minh@example.com</p>
+          <p>{currentUser?.email || ''}</p>
 
           <div className="account-actions">
             <button
@@ -1208,6 +1377,7 @@ function App() {
               type="button"
               onClick={() => {
                 setIsLoggedIn(false)
+                setCurrentUser(null)
                 showToast('Đã đăng xuất!')
                 goToPage('home')
               }}
@@ -1220,11 +1390,16 @@ function App() {
     )
   }
 
-  function LoginModal() {
+  // Cửa sổ đăng nhập tài khoản
+  function renderLoginModal() {
     return (
       <div
         className="modal-overlay"
-        onMouseDown={() => setShowLogin(false)}
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) {
+            setShowLogin(false)
+          }
+        }}
       >
         <div
           className="login-modal"
@@ -1250,35 +1425,43 @@ function App() {
             Đăng nhập để tiếp tục mua sắm tại ComicHub.
           </p>
 
-          <label>
-            Email
+          <form onSubmit={handleLogin}>
+            <label>
+              Email
 
-            <input
-              type="email"
-              placeholder="Nhập email..."
-            />
-          </label>
+              <input
+                type="email"
+                placeholder="Nhập email..."
+                value={loginEmail}
+                onChange={(event) =>
+                  setLoginEmail(event.target.value)
+                }
+                required
+              />
+            </label>
 
-          <label>
-            Mật khẩu
+            <label>
+              Mật khẩu
 
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu..."
-            />
-          </label>
+              <input
+                type="password"
+                placeholder="Nhập mật khẩu..."
+                value={loginPassword}
+                onChange={(event) =>
+                  setLoginPassword(event.target.value)
+                }
+                required
+              />
+            </label>
 
-          <button
-            type="button"
-            className="primary-button full-button"
-            onClick={() => {
-              setIsLoggedIn(true)
-              setShowLogin(false)
-              showToast('Đăng nhập thành công!')
-            }}
-          >
-            Đăng nhập
-          </button>
+            <button
+              type="submit"
+              className="primary-button full-button"
+              disabled={authLoading}
+            >
+              {authLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
+            </button>
+          </form>
 
           <p className="modal-switch">
             Chưa có tài khoản?
@@ -1298,13 +1481,16 @@ function App() {
     )
   }
 
-  function RegisterModal() {
+  // Cửa sổ đăng ký tài khoản mới
+  function renderRegisterModal() {
     return (
       <div
         className="modal-overlay"
-        onMouseDown={() =>
-          setShowRegister(false)
-        }
+        onMouseDown={(event) => {
+          if (event.target === event.currentTarget) {
+            setShowRegister(false)
+          }
+        }}
       >
         <div
           className="login-modal"
@@ -1332,47 +1518,58 @@ function App() {
             Tạo tài khoản mới để sử dụng ComicHub.
           </p>
 
-          <label>
-            Họ và tên
+          <form onSubmit={handleRegister}>
+            <label>
+              Họ và tên
 
-            <input
-              type="text"
-              placeholder="Nhập họ tên..."
-            />
-          </label>
+              <input
+                type="text"
+                placeholder="Nhập họ tên..."
+                value={registerName}
+                onChange={(event) =>
+                  setRegisterName(event.target.value)
+                }
+                required
+              />
+            </label>
 
-          <label>
-            Email
+            <label>
+              Email
 
-            <input
-              type="email"
-              placeholder="Nhập email..."
-            />
-          </label>
+              <input
+                type="email"
+                placeholder="Nhập email..."
+                value={registerEmail}
+                onChange={(event) =>
+                  setRegisterEmail(event.target.value)
+                }
+                required
+              />
+            </label>
 
-          <label>
-            Mật khẩu
+            <label>
+              Mật khẩu
 
-            <input
-              type="password"
-              placeholder="Tạo mật khẩu..."
-            />
-          </label>
+              <input
+                type="password"
+                placeholder="Tạo mật khẩu..."
+                value={registerPassword}
+                onChange={(event) =>
+                  setRegisterPassword(event.target.value)
+                }
+                minLength={6}
+                required
+              />
+            </label>
 
-          <button
-            type="button"
-            className="primary-button full-button"
-            onClick={() => {
-              setShowRegister(false)
-              setShowLogin(true)
-
-              showToast(
-                'Đăng ký thành công! Hãy đăng nhập.',
-              )
-            }}
-          >
-            Đăng ký
-          </button>
+            <button
+              type="submit"
+              className="primary-button full-button"
+              disabled={authLoading}
+            >
+              {authLoading ? 'Đang đăng ký...' : 'Đăng ký'}
+            </button>
+          </form>
 
           <p className="modal-switch">
             Đã có tài khoản?
@@ -1392,6 +1589,7 @@ function App() {
     )
   }
 
+  // Khu vực giới thiệu lợi ích của ComicHub
   function Benefits() {
     return (
       <section className="benefits-section">
@@ -1434,6 +1632,7 @@ function App() {
     )
   }
 
+  // Chân trang website
   function Footer() {
     return (
       <footer className="footer">
@@ -1466,6 +1665,7 @@ function App() {
     )
   }
 
+  // Xác định nội dung trang cần hiển thị
   function renderPage() {
     switch (currentPage) {
       case 'shop':
@@ -1490,7 +1690,7 @@ function App() {
         return <SalePage />
 
       case 'chat':
-        return <ChatPage />
+        return renderChatPage()
 
       case 'account':
         return <AccountPage />
@@ -1500,6 +1700,7 @@ function App() {
     }
   }
 
+  // Giao diện tổng thể của website
   return (
     <div className="app">
       <Header />
@@ -1514,9 +1715,9 @@ function App() {
         </div>
       )}
 
-      {showLogin && <LoginModal />}
+      {showLogin && renderLoginModal()}
 
-      {showRegister && <RegisterModal />}
+      {showRegister && renderRegisterModal()}
     </div>
   )
 }

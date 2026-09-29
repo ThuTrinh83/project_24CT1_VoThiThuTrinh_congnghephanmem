@@ -1,3 +1,4 @@
+/* 1. Thiết lập màu sắc và biến dùng chung */
 :root {
   --primary: #5b9bd5;
   --primary-dark: #357abd;
@@ -44,6 +45,16 @@ button {
   cursor: pointer;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.full-button {
+  width: 100%;
+}
+
+/* 2. Khung tổng thể của ứng dụng */
 .app {
   min-height: 100vh;
 
@@ -54,6 +65,7 @@ button {
    HEADER
 ========================= */
 
+/* 3. Header và thanh điều hướng */
 .header {
   position: sticky;
   top: 0;
@@ -219,6 +231,7 @@ button {
    HERO
 ========================= */
 
+/* 4. Khu vực banner trang chủ */
 .hero-section {
   max-width: 1200px;
   min-height: 440px;
@@ -334,6 +347,7 @@ button {
    GENERAL
 ========================= */
 
+/* 5. Các section và tiêu đề */
 .section {
   max-width: 1200px;
 
@@ -428,6 +442,7 @@ button {
    PRODUCTS
 ========================= */
 
+/* 6. Danh sách và thẻ sản phẩm */
 .product-grid {
   display: grid;
 
@@ -671,6 +686,7 @@ button {
    DETAIL
 ========================= */
 
+/* 7. Trang chi tiết sản phẩm */
 .detail-content {
   display: grid;
 
@@ -820,6 +836,7 @@ button {
    CART
 ========================= */
 
+/* 8. Giỏ hàng và thanh tóm tắt */
 .cart-layout {
   display: grid;
 
@@ -1009,6 +1026,7 @@ button {
    CHECKOUT
 ========================= */
 
+/* 9. Form đặt hàng */
 .checkout-form {
   display: grid;
 
@@ -1083,6 +1101,7 @@ button {
    ORDERS
 ========================= */
 
+/* 10. Danh sách đơn hàng */
 .orders-list {
   display: flex;
   flex-direction: column;
@@ -1503,6 +1522,7 @@ button {
    FOOTER
 ========================= */
 
+/* 13. Footer */
 .footer {
   padding: 45px max(24px, calc((100% - 1152px) / 2));
 
@@ -1541,6 +1561,7 @@ button {
    LOGIN / REGISTER MODAL
 ========================= */
 
+/* 12. Cửa sổ đăng nhập và đăng ký */
 .modal-overlay {
   position: fixed;
 
@@ -1854,6 +1875,28 @@ button {
     grid-template-columns: 1fr;
 
     gap: 25px;
+  }
+
+  .detail-actions {
+    flex-wrap: wrap;
+  }
+
+  .detail-actions .primary-button,
+  .detail-actions .secondary-button {
+    flex: 1;
+  }
+
+  .chat-messages {
+    height: 360px;
+    padding: 18px;
+  }
+
+  .message {
+    max-width: 85%;
+  }
+
+  .chat-input-area {
+    padding: 12px;
   }
 
   .login-modal {
