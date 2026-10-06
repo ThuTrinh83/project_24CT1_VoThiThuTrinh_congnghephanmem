@@ -343,6 +343,147 @@ app.put("/api/orders/:id/status", async (req, res) => {
     }
 });
 
+/* ===== D. ĐÁNH GIÁ SẢN PHẨM ===== */
+
+/* Lấy đánh giá theo sản phẩm */
+app.get("/api/reviews/:productId", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input('productId', sql.Int, req.params.productId)
+            .query(`
+                SELECT r.id, r.rating, r.comment, r.created_at,
+                       u.name as user_name
+                FROM Reviews r
+                JOIN Users u ON r.user_id = u.id
+                WHERE r.product_id = @productId
+                ORDER BY r.created_at DESC
+            `);
+        res.json({ success: true, reviews: result.recordset });
+    } catch (error) {
+        console.error("Lỗi lấy đánh giá:", error);
+        res.status(500).json({ success: false, message: "Lỗi lấy đánh giá" });
+    }
+});
+
+/* Thêm đánh giá (chỉ sau khi đã mua) */
+app.post("/api/reviews/:productId", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const { userId, rating, comment } = req.body;
+        const { productId } = req.params;
+
+        // Kiểm tra đã mua chưa
+        const bought = await pool.request()
+            .input('userId', sql.Int, userId)
+            .input('productId', sql.Int, productId)
+            .query(`
+                SELECT COUNT(*) as cnt
+                FROM OrderItems oi
+                JOIN Orders o ON oi.order_id = o.id
+                WHERE o.user_id = @userId AND oi.product_id = @productId
+            `);
+
+        if (bought.recordset[0].cnt === 0) {
+            return res.status(403).json({
+                success: false,
+                message: "Bạn cần mua sản phẩm này trước khi đánh giá!"
+            });
+        }
+
+        // Kiểm tra đã đánh giá chưa
+        const existed = await pool.request()
+            .input('userId', sql.Int, userId)
+            .input('productId', sql.Int, productId)
+            .query('SELECT id FROM Reviews WHERE user_id = @userId AND product_id = @productId');
+
+        if (existed.recordset.length > 0) {
+            // Cập nhật đánh giá
+            await pool.request()
+                .input('userId', sql.Int, userId)
+                .input('productId', sql.Int, productId)
+                .input('rating', sql.Int, rating)
+                .input('comment', sql.NVarChar, comment)
+                .query('UPDATE Reviews SET rating=@rating, comment=@comment WHERE user_id=@userId AND product_id=@productId');
+        } else {
+            // Thêm mới
+            await pool.request()
+                .input('userId', sql.Int, userId)
+                .input('productId', sql.Int, productId)
+                .input('rating', sql.Int, rating)
+                .input('comment', sql.NVarChar, comment)
+                .query('INSERT INTO Reviews (user_id, product_id, rating, comment) VALUES (@userId, @productId, @rating, @comment)');
+        }
+
+        res.json({ success: true, message: "Đánh giá thành công!" });
+    } catch (error) {
+        console.error("Lỗi đánh giá:", error);
+        res.status(500).json({ success: false, message: "Lỗi đánh giá" });
+    }
+});
+
+/* ===== E. CHAT / TƯ VẤN ===== */
+
+/* Lấy lịch sử tin nhắn của 1 user */
+app.get("/api/messages/:userId", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const userId = req.params.userId;
+        const result = await pool.request()
+            .input('userId', sql.Int, userId)
+            .query(`
+                SELECT m.*, 
+                       u.name as sender_name
+                FROM Messages m
+                JOIN Users u ON m.sender_id = u.id
+                WHERE m.sender_id = @userId OR m.receiver_id = @userId
+                ORDER BY m.created_at ASC
+            `);
+        res.json({ success: true, messages: result.recordset });
+    } catch (error) {
+        console.error("Lỗi lấy tin nhắn:", error);
+        res.status(500).json({ success: false });
+    }
+});
+
+/* Gửi tin nhắn (sender_id -> receiver_id) */
+app.post("/api/messages", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const { senderId, receiverId, content } = req.body;
+        await pool.request()
+            .input('senderId', sql.Int, senderId)
+            .input('receiverId', sql.Int, receiverId)
+            .input('content', sql.NVarChar, content)
+            .query('INSERT INTO Messages (sender_id, receiver_id, content) VALUES (@senderId, @receiverId, @content)');
+        res.json({ success: true });
+    } catch (error) {
+        console.error("Lỗi gửi tin nhắn:", error);
+        res.status(500).json({ success: false });
+    }
+});
+
+/* Lấy tất cả chat (cho Shop xem - group theo user) */
+app.get("/api/messages/shop/all", async (req, res) => {
+    try {
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .query(`
+                SELECT m.*, 
+                       s.name as sender_name,
+                       r.name as receiver_name
+                FROM Messages m
+                JOIN Users s ON m.sender_id = s.id
+                JOIN Users r ON m.receiver_id = r.id
+                ORDER BY m.created_at ASC
+            `);
+        res.json({ success: true, messages: result.recordset });
+    } catch (error) {
+        console.error("Lỗi lấy toàn bộ chat:", error);
+        res.status(500).json({ success: false });
+    }
+});
+
 /* 3. Đăng ký tài khoản */
 
 app.post("/api/register", async (req, res) => {

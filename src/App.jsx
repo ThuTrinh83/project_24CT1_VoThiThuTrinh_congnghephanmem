@@ -9,60 +9,16 @@ function formatPrice(price) {
 
 // Component chính của ứng dụng ComicHub
 function App() {
+  // ===== KHAI BÁO TẤT CẢ STATE TRƯỚC =====
+
   // Dữ liệu từ Backend
   const [products, setProducts] = useState([])
   const [categories, setCategories] = useState(['Tất cả'])
 
-  useEffect(() => {
-    // Lấy danh mục
-    fetch('http://localhost:5000/api/categories')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setCategories(['Tất cả', ...data.categories.map(c => c.name)])
-        }
-      })
-      .catch(err => console.error('Lỗi lấy danh mục:', err))
-
-    // Lấy sản phẩm
-    fetch('http://localhost:5000/api/products')
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) {
-          setProducts(data.products)
-        }
-      })
-      .catch(err => console.error('Lỗi lấy sản phẩm:', err))
-  }, [])
-
-  useEffect(() => {
-    if (currentUser) {
-      fetch(`http://localhost:5000/api/cart/${currentUser.id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setCart(data.cart)
-          }
-        })
-        .catch(console.error)
-        
-      fetch(`http://localhost:5000/api/orders/${currentUser.id}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.success) {
-            setOrders(data.orders)
-          }
-        })
-        .catch(console.error)
-    } else {
-      setCart([])
-      setOrders([])
-    }
-  }, [currentUser])
-
   // Trạng thái chuyển trang và sản phẩm đang được chọn
   const [currentPage, setCurrentPage] = useState('home')
   const [selectedProduct, setSelectedProduct] = useState(null)
+
   // Trạng thái tìm kiếm và lọc sản phẩm
   const [selectedCategory, setSelectedCategory] = useState('Tất cả')
   const [searchText, setSearchText] = useState('')
@@ -80,6 +36,76 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [currentUser, setCurrentUser] = useState(null)
 
+  // ===== useEffect SAU KHI CÓ ĐỦ STATE =====
+
+  // Lấy danh mục và sản phẩm lúc tải trang
+  useEffect(() => {
+    fetch('http://localhost:5000/api/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setCategories(['Tất cả', ...data.categories.map(c => c.name)])
+        }
+      })
+      .catch(err => console.error('Lỗi lấy danh mục:', err))
+
+    fetch('http://localhost:5000/api/products')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setProducts(data.products)
+        }
+      })
+      .catch(err => console.error('Lỗi lấy sản phẩm:', err))
+  }, [])
+
+  // Khôi phục session từ localStorage khi tải trang
+  useEffect(() => {
+    const saved = localStorage.getItem('comichub_user')
+    if (saved) {
+      try {
+        const user = JSON.parse(saved)
+        setCurrentUser(user)
+        setIsLoggedIn(true)
+      } catch (_) {
+        localStorage.removeItem('comichub_user')
+      }
+    }
+  }, [])
+
+  // Đồng bộ giỏ hàng, đơn hàng, chat khi đăng nhập/đăng xuất
+  useEffect(() => {
+    if (currentUser) {
+      fetch(`http://localhost:5000/api/cart/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => { if (data.success) setCart(data.cart) })
+        .catch(console.error)
+
+      fetch(`http://localhost:5000/api/orders/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => { if (data.success) setOrders(data.orders) })
+        .catch(console.error)
+
+      fetch(`http://localhost:5000/api/messages/${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            // Map về định dạng {id, sender, text}
+            setChatMessages(data.messages.map(m => ({
+              id: m.id,
+              sender: m.sender_id === currentUser.id ? 'customer' : 'shop',
+              text: m.content,
+            })))
+          }
+        })
+        .catch(console.error)
+    } else {
+      setCart([])
+      setOrders([])
+      setChatMessages([])
+    }
+  }, [currentUser])
+
   // Dữ liệu nhập trong form đăng nhập
   const [loginEmail, setLoginEmail] = useState('')
   const [loginPassword, setLoginPassword] = useState('')
@@ -93,16 +119,12 @@ function App() {
   // Thông báo nhỏ hiển thị trên giao diện
   const [message, setMessage] = useState('')
 
-  // Trạng thái tin nhắn tư vấn với Shop
-  const [chatMessages, setChatMessages] = useState([
-    {
-      id: 1,
-      sender: 'shop',
-      text: 'Xin chào! ComicHub có thể giúp gì cho bạn?',
-    },
-  ])
-
+  // Chat — lấy từ DB, không hard-code
+  const [chatMessages, setChatMessages] = useState([])
   const [chatText, setChatText] = useState('')
+
+  // Shop ID cố định (user role='shop' trong DB)
+  const SHOP_USER_ID = 2
 
   // Hiển thị thông báo nhanh trên giao diện
   function showToast(text) {
@@ -149,6 +171,7 @@ function App() {
       setShowLogin(false)
       setLoginEmail('')
       setLoginPassword('')
+      localStorage.setItem('comichub_user', JSON.stringify(data.user))
       showToast(`Đăng nhập thành công! Xin chào ${data.user.name}!`)
     } catch (error) {
       console.error('Login error:', error)
@@ -396,37 +419,34 @@ function App() {
   }
 
   // Gửi tin nhắn tư vấn cho Shop
-  function sendMessage() {
+  async function sendMessage() {
     const text = chatText.trim()
+    if (!text) return
 
-    if (!text) {
+    if (!currentUser) {
+      showToast('Vui lòng đăng nhập để chat!')
+      setShowLogin(true)
       return
     }
 
-    // Thêm tin nhắn của khách hàng vào khung chat
-    setChatMessages((messages) => [
-      ...messages,
-      {
-        id: Date.now(),
-        sender: 'customer',
-        text,
-      },
-    ])
-
+    // Lưu tin nhắn local ngay lập tức
+    setChatMessages(prev => [...prev, { id: Date.now(), sender: 'customer', text }])
     setChatText('')
 
-    // Tạo phản hồi mẫu từ Shop sau một khoảng thời gian
-    setTimeout(() => {
-      setChatMessages((messages) => [
-        ...messages,
-        {
-          id: Date.now() + 1,
-          sender: 'shop',
-          text:
-            'Shop đã nhận được tin nhắn của bạn. Mình sẽ tư vấn ngay nhé!',
-        },
-      ])
-    }, 700)
+    // Gửi lên DB
+    try {
+      await fetch('http://localhost:5000/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderId: currentUser.id,
+          receiverId: SHOP_USER_ID,
+          content: text
+        })
+      })
+    } catch (err) {
+      console.error('Lỗi gửi tin nhắn:', err)
+    }
   }
 
   // Tính tổng số lượng sản phẩm trong giỏ hàng
@@ -1378,6 +1398,7 @@ function App() {
               onClick={() => {
                 setIsLoggedIn(false)
                 setCurrentUser(null)
+                localStorage.removeItem('comichub_user')
                 showToast('Đã đăng xuất!')
                 goToPage('home')
               }}
