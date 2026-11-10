@@ -1,0 +1,743 @@
+/* ========================================================
+   CUSTOMER.CSS - THIẾT KẾ GIAO DIỆN CHUẨN FAHASA.COM (BLUE PALETTE)
+   ======================================================== */
+
+/* Toàn trang nền xám nhạt dịu mắt chuẩn Fahasa */
+body {
+  background-color: #f0f2f5;
+}
+
+/* 1. TOP PROMO BANNER TRÊN CÙNG */
+.fahasa-top-promo-bar {
+  background: linear-gradient(90deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%);
+  color: #fff;
+  text-align: center;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.promo-tag-btn {
+  background: #ffedd5;
+  color: #c2410c;
+  padding: 2px 10px;
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+/* 2. HEADER CHUẨN FAHASA */
+.fahasa-header {
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.fahasa-topbar {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 5px 0;
+  font-size: 12.5px;
+  color: #64748b;
+}
+
+.fahasa-header-main {
+  padding: 12px 0;
+}
+
+.fahasa-header-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+/* Logo ComicHub sắc nét */
+.fahasa-logo {
+  font-size: 24px;
+  font-weight: 900;
+  color: #0284c7;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fahasa-logo span {
+  color: #f97316;
+}
+
+/* Nút Icon Danh Mục 4 ô vuông + mũi tên */
+.fahasa-category-menu-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 9px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #334155;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.fahasa-category-menu-btn:hover {
+  background: #e0f2fe;
+  border-color: #38bdf8;
+  color: #0284c7;
+}
+
+.category-icon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 6px);
+  gap: 3px;
+}
+
+.category-icon-grid span {
+  width: 6px;
+  height: 6px;
+  background: #0284c7;
+  border-radius: 1px;
+}
+
+/* Thanh tìm kiếm bo tròn gọn gàng có kính lúp nằm gọn bên trong */
+.fahasa-search-wrapper {
+  flex: 1;
+  max-width: 580px;
+  position: relative;
+}
+
+.fahasa-search-box {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 2px solid #0284c7;
+  border-radius: 24px;
+  padding: 2px 6px 2px 18px;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.08);
+  transition: box-shadow var(--transition-fast);
+}
+
+.fahasa-search-box:focus-within {
+  box-shadow: 0 3px 12px rgba(2, 132, 199, 0.22);
+}
+
+.fahasa-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 0;
+  color: #0f172a;
+  background: transparent;
+}
+
+.fahasa-search-icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: #0284c7;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.fahasa-search-icon-btn:hover {
+  background: #0369a1;
+}
+
+/* Cụm 3 icon có chữ bên dưới giống hệt Fahasa */
+.fahasa-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.fahasa-action-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  color: #64748b;
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.fahasa-action-item:hover {
+  color: #0284c7;
+}
+
+.fahasa-action-icon {
+  font-size: 20px;
+  position: relative;
+}
+
+.fahasa-action-label {
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.fahasa-cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fff;
+}
+
+/* 3. HERO BANNER SLIDER & 2 BANNER PHỤ */
+.fahasa-hero-section {
+  margin: 18px 0;
+}
+
+.fahasa-hero-grid {
+  display: grid;
+  grid-template-columns: 2.1fr 1fr;
+  gap: 16px;
+}
+
+.fahasa-slider-container {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  height: 320px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.fahasa-slide {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 40px;
+  color: #fff;
+  background-size: cover;
+  background-position: center;
+}
+
+.fahasa-slide-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(2, 44, 90, 0.88) 0%, rgba(2, 132, 199, 0.7) 60%, rgba(0, 0, 0, 0.15) 100%);
+  z-index: 1;
+}
+
+.fahasa-slide-content {
+  position: relative;
+  z-index: 2;
+  max-width: 480px;
+}
+
+.fahasa-slide-tag {
+  display: inline-block;
+  background: #f97316;
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.fahasa-slide-title {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.25;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.fahasa-slide-desc {
+  font-size: 14px;
+  opacity: 0.95;
+  margin-bottom: 20px;
+}
+
+.fahasa-sub-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fahasa-sub-banner-item {
+  border-radius: 12px;
+  overflow: hidden;
+  height: calc(160px - 8px);
+  position: relative;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  cursor: pointer;
+  transition: transform var(--transition-fast);
+}
+
+.fahasa-sub-banner-item:hover {
+  transform: translateY(-2px);
+}
+
+.fahasa-sub-banner-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.fahasa-sub-banner-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(2, 44, 90, 0.85) 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  color: #fff;
+}
+
+/* 4. SECTION XU HƯỚNG MUA SẮM */
+.fahasa-trend-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px 20px 24px;
+  margin: 20px 0 28px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.05);
+  border: 1px solid #e2e8f0;
+}
+
+.fahasa-trend-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #e0f2fe;
+  padding-bottom: 0px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 16px;
+  overflow: visible;
+}
+
+.fahasa-trend-title-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #e0f2fe;
+  color: #0369a1;
+  padding: 8px 18px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* Tabs gạch chân mượt mà - Tuyệt đối không cắt dấu tiếng Việt và không có thanh cuộn dọc */
+.fahasa-trend-tabs {
+  display: flex;
+  gap: 28px;
+  overflow: visible;
+  padding: 0;
+  margin-bottom: -2px;
+}
+
+.fahasa-trend-tab-btn {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: #64748b;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: 4px;
+  padding-right: 4px;
+  line-height: 1.5;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+}
+
+.fahasa-trend-tab-btn:hover {
+  color: #0284c7;
+}
+
+.fahasa-trend-tab-btn.active {
+  color: #0284c7;
+}
+
+.fahasa-trend-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #0284c7;
+  border-radius: 3px;
+}
+
+/* 5. LƯỚI SẢN PHẨM: ĐÚNG 5 SẢN PHẨM TRÊN 1 HÀNG */
+.fahasa-grid-5 {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+@media (max-width: 1100px) {
+  .fahasa-grid-5 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .fahasa-grid-5 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 580px) {
+  .fahasa-grid-5 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 6. THẺ SẢN PHẨM (PRODUCT CARD) CHUẨN FAHASA 100% */
+.fahasa-product-card {
+  background: #fff;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  overflow: hidden;
+}
+
+.fahasa-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(2, 132, 199, 0.12);
+  border-color: #38bdf8;
+}
+
+/* 6.1. Khung ảnh bìa đứng */
+.fahasa-thumb-box {
+  position: relative;
+  width: 100%;
+  height: 230px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.fahasa-book-cover {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.08));
+}
+
+.fahasa-product-card:hover .fahasa-book-cover {
+  transform: scale(1.05);
+}
+
+/* 6.2. Badge góc trên trái ảnh ("Sắp Có Hàng" / "Độc Quyền" / "Mới") */
+.fahasa-badge-top-left {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  z-index: 3;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+}
+
+.fahasa-badge-preorder {
+  background: #e0f2fe;
+  color: #0369a1;
+  border: 1px solid #bae6fd;
+}
+
+.fahasa-badge-exclusive {
+  background: #ffedd5;
+  color: #c2410c;
+  border: 1px solid #fed7aa;
+}
+
+.fahasa-badge-new {
+  background: #dcfce7;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+
+/* 6.3. Badge góc dưới bên phải ảnh: Nhãn màu đen ghi số tập ("Tập 25+26", "Tập 108") */
+.fahasa-volume-tag {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  background: rgba(15, 23, 42, 0.9);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 4px;
+  z-index: 3;
+  backdrop-filter: blur(2px);
+  letter-spacing: 0.2px;
+}
+
+/* Nút thêm nhanh khi hover */
+.fahasa-quick-add-btn {
+  position: absolute;
+  bottom: -40px;
+  left: 10px;
+  right: 10px;
+  background: rgba(2, 132, 199, 0.95);
+  color: #fff;
+  border-radius: 6px;
+  padding: 7px;
+  font-size: 12.5px;
+  font-weight: 700;
+  transition: bottom 0.25s ease;
+  z-index: 4;
+}
+
+.fahasa-product-card:hover .fahasa-quick-add-btn {
+  bottom: 8px;
+}
+
+/* 6.4. Tiêu đề sách kèm Tag phía trước (tối đa 2 dòng) */
+.fahasa-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.fahasa-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.4;
+  height: 38px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 8px;
+}
+
+.fahasa-product-card:hover .fahasa-card-title {
+  color: #0284c7;
+}
+
+.fahasa-title-tag {
+  display: inline-block;
+  background: #ffedd5;
+  color: #ea580c;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* 6.5. Giá & Khuyến Mãi */
+.fahasa-price-container {
+  margin-bottom: 8px;
+}
+
+.fahasa-price-main-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fahasa-sale-price {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #ef4444;
+}
+
+.fahasa-discount-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.fahasa-original-price {
+  font-size: 12px;
+  color: #94a3b8;
+  text-decoration: line-through;
+  margin-top: 1px;
+}
+
+/* 6.6. Thanh tiến độ / Đánh giá sao */
+.fahasa-card-footer {
+  margin-top: auto;
+}
+
+/* Thanh ngang bo tròn tiến độ bán */
+.fahasa-progress-track {
+  width: 100%;
+  height: 16px;
+  background: #fee2e2;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fahasa-progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, #f97316 0%, #ef4444 100%);
+  border-radius: 10px;
+}
+
+.fahasa-progress-label {
+  position: relative;
+  z-index: 2;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  text-transform: uppercase;
+}
+
+/* Đánh giá sao thường */
+.fahasa-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+}
+
+.fahasa-stars {
+  color: #f59e0b;
+  letter-spacing: 1px;
+}
+
+.fahasa-sold-text {
+  color: #64748b;
+  font-weight: 500;
+}
+
+/* 7. KHUNG ĐĂNG NHẬP / ĐĂNG KÝ CHUẨN FAHASA */
+.fahasa-auth-container {
+  max-width: 460px;
+  width: 100%;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+}
+
+/* 2 Tab chuyển đổi trực tiếp trên cùng 1 khung */
+.fahasa-auth-tabs {
+  display: flex;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.fahasa-auth-tab {
+  flex: 1;
+  text-align: center;
+  padding: 16px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-fast);
+}
+
+.fahasa-auth-tab.active {
+  color: #0284c7;
+}
+
+.fahasa-auth-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  background: #0284c7;
+  border-radius: 3px;
+}
+
+.fahasa-auth-body {
+  padding: 32px 36px 28px;
+}
+
+/* Ô input mật khẩu có nút chữ "Hiện" / "Ẩn" bên trong */
+.fahasa-password-group {
+  position: relative;
+}
+
+.fahasa-toggle-pwd-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0284c7;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Gợi ý cho bạn dưới khung đăng nhập */
+.fahasa-auth-suggestions {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 0 16px;
+}
+
+.fahasa-suggestion-title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 800;
+  color: #0284c7;
+  margin-bottom: 20px;
+}
